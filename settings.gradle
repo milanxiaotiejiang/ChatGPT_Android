@@ -1,1 +1,1 @@
-include ':app', ':DataProvider', ':BaseLibrary', ':chatkit'
+include ':app', ':lib_base_provider', ':lib_data_provider', ':chatkit'

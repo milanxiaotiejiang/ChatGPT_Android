@@ -1,0 +1,190 @@
+apply plugin: 'com.android.library'
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
+
+android {
+    compileSdkVersion compile_sdk_version
+
+    defaultConfig {
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+
+        multiDexEnabled true
+        flavorDimensions "1"
+
+        ndk {
+//            abiFilters "armeabi", "armeabi-v7a"
+            abiFilters "armeabi-v7a"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = compose_version
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/INDEX.LIST']
+        }
+    }
+
+    lint {
+        abortOnError false
+    }
+
+}
+dependencies {
+
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+//    api "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlin_version"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+
+    api fileTree(dir: 'libs', include: ['*.jar'])
+
+    //协程 MVVM
+    //ViewModel
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+    //LiveData
+    api "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+    //lifecycle
+    api "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+
+    api 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
+
+    //leakCanary
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+    //blockCanary
+//    api 'com.github.markzhai:blockcanary-android:1.5.0'
+
+    api 'com.tencent.bugly:nativecrashreport:3.9.2'
+    api 'com.tencent.bugly:crashreport_upgrade:1.5.23'
+
+    //android x 库
+    api 'androidx.appcompat:appcompat:1.6.1'
+    api 'androidx.constraintlayout:constraintlayout:2.1.4'
+    api 'com.google.android.material:material:1.8.0'
+    api 'androidx.recyclerview:recyclerview:1.3.0'
+    api 'androidx.cardview:cardview:1.0.0'
+    api 'androidx.browser:browser:1.5.0'
+    api 'androidx.annotation:annotation:1.6.0'
+    api 'androidx.legacy:legacy-support-v4:1.0.0'
+    api "androidx.dynamicanimation:dynamicanimation:1.0.0"
+    api 'androidx.core:core-ktx:1.9.0'
+    api 'androidx.viewpager2:viewpager2:1.0.0'
+    api 'androidx.activity:activity-ktx:1.7.0'
+
+    api 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+
+    // compose https://developer.android.com/jetpack/androidx/releases/compose-material?hl=zh-cn#declaring_dependencies
+    api "androidx.compose.compiler:compiler:$compose_version"
+    api "androidx.compose.ui:ui:1.3.3"
+    api "androidx.compose.animation:animation:1.3.3"
+    api 'androidx.compose.foundation:foundation:1.3.1'
+    api 'androidx.compose.material:material:1.3.1'
+    api 'androidx.compose.material3:material3:1.0.1'
+
+    //分包
+    api 'androidx.multidex:multidex:2.0.1'
+
+    //沉浸式 https://github.com/gyf-dev/ImmersionBar
+    api 'com.geyifeng.immersionbar:immersionbar:3.2.2'
+    api 'com.geyifeng.immersionbar:immersionbar-components:3.2.2'
+    api 'com.geyifeng.immersionbar:immersionbar-ktx:3.2.2'
+
+    api 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
+
+    //https://github.com/square/retrofit
+    api 'com.squareup.retrofit2:retrofit:2.9.0'
+    api 'com.squareup.retrofit2:converter-gson:2.9.0'
+    api "com.squareup.retrofit2:converter-scalars:2.9.0"
+    //协程相关
+//    api 'com.squareup.retrofit2:converter-scalars:2.5.0'
+
+    //https://github.com/square/okhttp
+    api 'com.squareup.okhttp3:okhttp:4.10.0'
+    api 'com.squareup.okhttp3:logging-interceptor:4.10.0'
+
+    //https://github.com/greenrobot/EventBus
+    api 'org.greenrobot:eventbus:3.2.0'
+
+    //dns
+    api 'com.qiniu:happy-dns:0.2.13'
+
+    //gson
+    api 'com.google.code.gson:gson:2.9.0'
+
+    //封装adapter
+    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+
+    //https://github.com/bumptech/glide
+    api 'com.github.bumptech.glide:glide:4.15.1'
+    kapt 'com.github.bumptech.glide:compiler:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+
+    //https://github.com/Tapadoo/Alerter 4.0.0以后支持AndroidX
+    api 'com.github.tapadoo:alerter:7.2.4'
+
+    //改为xlog 系统保存日志文件 https://github.com/elvishew/XLog/blob/master/README_ZH.md
+    api 'com.elvishew:xlog:1.6.1'
+
+    //material风格弹窗
+    api 'com.afollestad.material-dialogs:core:3.3.0'
+    api 'com.afollestad.material-dialogs:input:3.3.0'
+    api 'com.afollestad.material-dialogs:lifecycle:3.3.0'
+
+    api 'com.github.li-xiaojun:XPopup:2.6.7'
+
+    //基于 mmap 的高性能通用 key-value 组件 https://github.com/Tencent/MMKV/blob/master/readme_cn.md
+    api 'com.tencent:mmkv-static:1.2.10'
+
+    //刷新加载库
+    api 'io.github.scwang90:refresh-layout-kernel:2.0.5'      //核心必须依赖
+    api 'io.github.scwang90:refresh-header-classics:2.0.5'    //经典刷新头
+//    api  'io.github.scwang90:refresh-header-radar:2.0.5'       //雷达刷新头
+//    api  'io.github.scwang90:refresh-header-falsify:2.0.5'     //虚拟刷新头
+    api 'io.github.scwang90:refresh-header-material:2.0.5'    //谷歌刷新头
+//    api  'io.github.scwang90:refresh-header-two-level:2.0.5'   //二级刷新头
+//    api  'io.github.scwang90:refresh-footer-ball:2.0.5'        //球脉冲加载
+    api 'io.github.scwang90:refresh-footer-classics:2.0.5'    //经典加载
+
+    //room 数据库
+    api "androidx.room:room-runtime:2.5.1"
+    kapt 'androidx.room:room-compiler:2.5.1'
+    annotationProcessor 'androidx.room:room-compiler:2.5.1'
+    api 'androidx.room:room-ktx:2.5.1'
+    api "androidx.room:room-guava:2.5.1"
+
+    //圆形
+    api 'de.hdodenhof:circleimageview:3.1.0'
+
+    // https://github.com/Tencent/VasDolly
+    api 'com.tencent.vasdolly:helper:3.0.4'
+
+    api 'com.guolindev.permissionx:permissionx:1.6.0'
+}
+
