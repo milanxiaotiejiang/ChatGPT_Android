@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.seabreeze.robot.base.widget.round.RoundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    app:rv_backgroundColor="@color/white"
+    app:rv_cornerRadius="20dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:lines="1"
+        android:textColor="@color/_xpopup_title_color"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingStart="20dp"
+        android:paddingTop="15dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="5dp"
+        android:text=""
+        android:textColor="#666666"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:singleLine="true"
+        android:textColor="@color/_xpopup_content_color"
+        android:textColorHint="#999999"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <com.seabreeze.robot.base.widget.round.RoundTextView
+            android:id="@+id/tv_cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="15dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/xpopup_cancel"
+            android:textColor="#909090"
+            android:textSize="18sp"
+            app:rv_backgroundColor="#4DE4E4E4"
+            app:rv_cornerRadius="14dp" />
+
+
+        <com.seabreeze.robot.base.widget.round.RoundTextView
+            android:id="@+id/tv_confirm"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="30dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/xpopup_ok"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            app:rv_backgroundColor="#17D6D6"
+            app:rv_cornerRadius="14dp" />
+    </LinearLayout>
+</com.seabreeze.robot.base.widget.round.RoundLinearLayout>

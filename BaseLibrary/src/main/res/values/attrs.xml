@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--    水波纹效果 （以下两个）-->
+    <declare-styleable name="MultiWaveHeader">
+        <attr name="mwhWaveHeight" format="dimension" />
+        <attr name="mwhStartColor" format="color" />
+        <attr name="mwhCloseColor" format="color" />
+        <attr name="mwhIsRunning" format="boolean" />
+        <attr name="mwhEnableFullScreen" format="boolean" />
+        <attr name="mwhColorAlpha" format="fraction|float" />
+        <attr name="mwhProgress" format="fraction|float" />
+        <attr name="mwhVelocity" format="fraction|float" />
+        <attr name="mwhGradientAngle" format="integer" />
+        <attr name="mwhCornerRadius" format="dimension" />
+        <attr name="mwhShape">
+            <enum name="Rect" value="0" />
+            <enum name="RoundRect" value="1" />
+            <enum name="Oval" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="DiffuseView">
+        <attr name="diffuse_color" format="color" />
+        <attr name="diffuse_coreColor" format="color" />
+        <attr name="diffuse_coreImage" format="reference" />
+        <attr name="diffuse_coreRadius" format="float" />
+        <attr name="diffuse_width" format="integer" />
+        <attr name="diffuse_maxWidth" format="integer" />
+        <attr name="diffuse_speed" format="integer" />
+        <attr name="diffuse_alpha_speed" format="integer" />
+    </declare-styleable>
+
+    <!--    swipe 滑动删除-->
+    <declare-styleable name="SwipeLayout">
+        <attr name="drag_edge">
+            <flag name="left" value="1" />
+            <flag name="right" value="2" />
+            <flag name="top" value="4" />
+            <flag name="bottom" value="8" />
+        </attr>
+        <attr name="leftEdgeSwipeOffset" format="dimension" />
+        <attr name="rightEdgeSwipeOffset" format="dimension" />
+        <attr name="topEdgeSwipeOffset" format="dimension" />
+        <attr name="bottomEdgeSwipeOffset" format="dimension" />
+        <attr name="show_mode" format="enum">
+            <enum name="lay_down" value="0" />
+            <enum name="pull_out" value="1" />
+        </attr>
+        <attr name="clickToClose" format="boolean" />
+    </declare-styleable>
+
+    <!--    验证码控件-->
+    <declare-styleable name="VerCodeEditText">
+        <attr name="figures" format="integer" />
+        <attr name="verCodeMargin" format="dimension" />
+        <attr name="bottomLineSelectedColor" format="reference" />
+        <attr name="bottomLineNormalColor" format="reference" />
+        <attr name="bottomLineHeight" format="dimension" />
+        <attr name="selectedBackgroundColor" format="reference" />
+        <attr name="cursorDuration" format="integer" />
+        <attr name="cursorWidth" format="dimension" />
+        <attr name="cursorColor" format="color|reference" />
+    </declare-styleable>
+
+    <!--AutoLinkStyleTextView-->
+    <declare-styleable name="AutoLinkStyleTextView">
+        <attr name="AutoLinkStyleTextView_text_value" format="string|reference" />
+        <attr name="AutoLinkStyleTextView_default_color" format="color|reference" />
+        <attr name="AutoLinkStyleTextView_has_under_line" format="boolean" />
+        <attr name="AutoLinkStyleTextView_start_image" format="reference" />
+        <attr name="AutoLinkStyleTextView_type">
+            <enum name="start_image" value="0" />
+            <enum name="content_text" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="SmoothCheckBox">
+        <attr name="duration" format="integer" />
+        <attr name="stroke_width" format="dimension" />
+        <attr name="color_tick" format="color" />
+        <attr name="color_checked" format="color" />
+        <attr name="color_unchecked" format="color" />
+        <attr name="color_unchecked_stroke" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="SplitEditText">
+        <attr name="setStrokeWidth" format="dimension"/>
+        <attr name="setBorderColor" format="color"/>
+        <attr name="setInputBorderColor" format="color"/>
+        <attr name="setFocusBorderColor" format="color"/>
+        <attr name="setBoxBackgroundColor" format="color"/>
+        <attr name="setBorderCornerRadius" format="dimension"/>
+        <attr name="setBorderSpacing" format="dimension"/>
+        <attr name="setMaxLength" format="integer"/>
+        <attr name="setBorderStyle" format="enum">
+            <enum name="box" value="0"/>
+            <enum name="line" value="1"/>
+        </attr>
+        <attr name="setTextStyle" format="enum">
+            <enum name="plain_text" value="0"/>
+            <enum name="cipher_text" value="1"/>
+        </attr>
+        <attr name="setCipherMask" format="string"/>
+        <attr name="setFakeBoldText" format="boolean"/>
+
+    </declare-styleable>
+
+    <declare-styleable name="TextDrawable">
+        <attr name="leftDrawable" format="reference" />
+        <attr name="leftDrawableWidth" format="dimension" />
+        <attr name="leftDrawableHeight" format="dimension" />
+        <attr name="rightDrawable" format="reference" />
+        <attr name="rightDrawableWidth" format="dimension" />
+        <attr name="rightDrawableHeight" format="dimension" />
+        <attr name="topDrawable" format="reference" />
+        <attr name="topDrawableWidth" format="dimension" />
+        <attr name="topDrawableHeight" format="dimension" />
+        <attr name="bottomDrawable" format="reference" />
+        <attr name="bottomDrawableWidth" format="dimension" />
+        <attr name="bottomDrawableHeight" format="dimension" />
+    </declare-styleable>
+</resources>

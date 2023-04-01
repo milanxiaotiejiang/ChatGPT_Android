@@ -2,15 +2,15 @@ package com.milan.chat.openai.gpt.ui.chat
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.milan.chat.openai.gpt.api.ConciseData
-import com.milan.chat.openai.gpt.api.OpenAiError
-import com.milan.chat.openai.gpt.api.OpenAiRespiratory
-import com.milan.chat.openai.gpt.api.RequestData
-import com.milan.chat.openai.gpt.ext.gToBean
-import com.milan.chat.openai.gpt.model.BaseThrowable
 import com.milan.chat.openai.gpt.ui.BaseMessagesActivity
+import com.seabreeze.robot.base.ext.foundation.BaseThrowable
+import com.seabreeze.robot.base.ext.tool.gToBean
+import com.seabreeze.robot.base.framework.mvvm.BaseViewModel
+import com.seabreeze.robot.data.net.DataRepository
+import com.seabreeze.robot.data.net.bean.request.RequestData
+import com.seabreeze.robot.data.net.bean.response.ConciseData
+import com.seabreeze.robot.data.net.bean.response.OpenAiError
 import com.stfalcon.chatkit.sample.common.data.model.Message
 import com.stfalcon.chatkit.sample.common.data.model.User
 import kotlinx.coroutines.flow.catch
@@ -24,7 +24,7 @@ import java.util.*
  * Time: 2023/3/30 21:03
  * Des:
  */
-class ChatViewModel : ViewModel() {
+class ChatViewModel : BaseViewModel() {
 
     private val messageQueue: LinkedList<Message> = LinkedList()
 
@@ -78,7 +78,7 @@ class ChatViewModel : ViewModel() {
                 messageMutableList.add(requestMessage)
                 val requestData = RequestData(messages = messageMutableList)
 
-                OpenAiRespiratory.INSTANCE.getCompletion(requestData).onStart {
+                DataRepository.INSTANCE.getCompletion(requestData).onStart {
                     onStart(selfMessage)
                 }.catch { e ->
                     onCatch(selfMessage, BaseThrowable.ExternalThrowable(e))

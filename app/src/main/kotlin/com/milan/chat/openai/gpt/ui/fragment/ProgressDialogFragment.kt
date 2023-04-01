@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.databinding.adapters.ImageViewBindingAdapter.setImageDrawable
 import androidx.fragment.app.DialogFragment
 import com.milan.chat.openai.gpt.R
-import com.milan.chat.openai.gpt.ext.fullScreen
 import com.scwang.smart.refresh.header.material.CircleImageView
 import com.scwang.smart.refresh.header.material.MaterialProgressDrawable
 

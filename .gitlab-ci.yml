@@ -1,0 +1,45 @@
+before_script:
+  - chmod +x ./gradlew
+
+stages:
+  - build
+
+#lintDebug:
+#  interruptible: true
+#  stage: build
+#  only:
+#    - master
+#  tags:
+#    - build
+#  script:
+#    - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
+
+debugTests:
+  interruptible: true
+  stage: build
+  only:
+    - master
+  tags:
+    - build
+  script:
+    - ./gradlew -Pci --console=plain :app:testDebug
+
+apk:
+  interruptible: true
+  stage: build
+  only:
+    - master
+  tags:
+    - build
+  script:
+    - gradle clean
+    #    - gradle channelDebug
+    - gradle channelRelease
+    - rm -rf apk/
+    - find app/build/channels/ -regextype posix-egrep -mindepth 1 -regex '.*(prod|uat).*\.apk' | cpio -admvp app/build/apk
+    - rm -rf channels/
+    - mkdir channels -p
+    - cp app/build/apk/app/build/channels/*.apk channels/
+  artifacts:
+    paths:
+      - channels/

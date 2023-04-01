@@ -1,0 +1,4 @@
+dev
+uat
+pre
+prod

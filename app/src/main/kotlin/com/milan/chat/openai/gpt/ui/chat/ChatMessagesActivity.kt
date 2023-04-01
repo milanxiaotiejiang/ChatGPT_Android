@@ -2,15 +2,16 @@ package com.milan.chat.openai.gpt.ui.chat
 
 import android.content.DialogInterface
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.widget.ImageView
 import com.milan.chat.openai.gpt.R
+import com.milan.chat.openai.gpt.databinding.ActivityChatMessagesBinding
 import com.milan.chat.openai.gpt.holders.IncomingVoiceMessageViewHolder
 import com.milan.chat.openai.gpt.holders.OutcomingVoiceMessageViewHolder
-import com.milan.chat.openai.gpt.model.onError
 import com.milan.chat.openai.gpt.ui.BaseMessagesActivity
+import com.seabreeze.robot.base.ext.foundation.onError
+import com.squareup.picasso.Picasso
+import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
-import com.stfalcon.chatkit.messages.MessageInput
-import com.stfalcon.chatkit.messages.MessagesList
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import com.stfalcon.chatkit.sample.common.data.fixtures.MessagesFixtures
 import com.stfalcon.chatkit.sample.common.data.model.Message
@@ -18,30 +19,71 @@ import com.stfalcon.chatkit.sample.common.data.model.Message
 /**
  * https://github.com/stfalcon-studio/ChatKit
  */
-class ChatMessagesActivity : BaseMessagesActivity(),
+class ChatMessagesActivity :
+    BaseMessagesActivity<ChatViewModel, ActivityChatMessagesBinding>(R.layout.activity_chat_messages),
     MessageHolders.ContentChecker<Message>, DialogInterface.OnClickListener {
-
-    private lateinit var messageInput: MessageInput
-    private lateinit var messagesList: MessagesList
-    private val chatViewModel: ChatViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat_messages)
-
-        initViews()
-        chatViewModel.initViewModel()
     }
 
-    private fun initViews() {
-        messageInput = findViewById(R.id.input)
-        messageInput.setInputListener { input ->
+    override fun onInitDataBinding() {
+        with(mDataBinding) {
+            viewModel = mViewModel
+        }.apply {
+            registerErrorEvent()
+            registerLoadingProgressBarEvent()
+        }
+    }
+
+    override fun initViewModelActions() {
+        with(mViewModel) {
+            inputLiveData.observe(this@ChatMessagesActivity) { message ->
+                if (message.user.id == USER_ID) {
+                    messagesAdapter.addToStart(message, true)
+                }
+            }
+            deleteMessage.observe(this@ChatMessagesActivity) { message ->
+                mDataBinding.messageInput.inputEditText.setText(message.text)
+                mDataBinding.messageInput.inputEditText.setSelection(mDataBinding.messageInput.inputEditText.text.length)
+                messagesAdapter.deleteById(message.id)
+            }
+
+            createLiveData.observe(this@ChatMessagesActivity) { message ->
+                unChatLimit()
+                messagesAdapter.addToStart(message, true)
+            }
+            streamLiveData.observe(this@ChatMessagesActivity) { message ->
+                messagesAdapter.update(message)
+            }
+            resultLiveData.observe(this@ChatMessagesActivity) { message ->
+                messagesAdapter.update(message)
+            }
+
+            errorMessage.observe(this@ChatMessagesActivity) { throwable ->
+                unChatLimit()
+                throwable.onError(this@ChatMessagesActivity)
+            }
+        }
+    }
+
+    override fun initData() {
+        imageLoader = object : ImageLoader {
+            override fun loadImage(imageView: ImageView, url: String?, payload: Any?) {
+                Picasso.get().load(url).into(imageView)
+            }
+
+            override fun loadImage(imageView: ImageView) {
+                Picasso.get().load(R.mipmap.ic_avatars_assistant).into(imageView)
+            }
+        }
+
+        mDataBinding.messageInput.setInputListener { input ->
             onChatLimit()
-            chatViewModel.sendMessage(input.toString())
+            mViewModel.sendMessage(input.toString())
             true
         }
 
-        messagesList = findViewById(R.id.messagesList)
         val holders = MessageHolders().registerContentType(
             CONTENT_TYPE_VOICE,
             IncomingVoiceMessageViewHolder::class.java,
@@ -54,46 +96,16 @@ class ChatMessagesActivity : BaseMessagesActivity(),
         messagesAdapter = MessagesListAdapter(USER_ID, holders, imageLoader)
         messagesAdapter.enableSelectionMode(this)
         messagesAdapter.setLoadMoreListener(this)
-        messagesList.setAdapter(messagesAdapter)
-    }
-
-
-    private fun ChatViewModel.initViewModel() {
-        inputLiveData.observe(this@ChatMessagesActivity) { message ->
-            if (message.user.id == USER_ID) {
-                messagesAdapter.addToStart(message, true)
-            }
-        }
-        deleteMessage.observe(this@ChatMessagesActivity) { message ->
-            messageInput.inputEditText.setText(message.text)
-            messageInput.inputEditText.setSelection(messageInput.inputEditText.text.length)
-            messagesAdapter.deleteById(message.id)
-        }
-
-        createLiveData.observe(this@ChatMessagesActivity) { message ->
-            unChatLimit()
-            messagesAdapter.addToStart(message, true)
-        }
-        streamLiveData.observe(this@ChatMessagesActivity) { message ->
-            messagesAdapter.update(message)
-        }
-        resultLiveData.observe(this@ChatMessagesActivity) { message ->
-            messagesAdapter.update(message)
-        }
-
-        errorMessage.observe(this@ChatMessagesActivity) { throwable ->
-            unChatLimit()
-            throwable.onError(this@ChatMessagesActivity)
-        }
+        mDataBinding.messagesList.setAdapter(messagesAdapter)
     }
 
     private fun onChatLimit() {
-        messageInput.prohibitInput(true)
+        mDataBinding.messageInput.prohibitInput(true)
         showProgressDialog()
     }
 
     private fun unChatLimit() {
-        messageInput.prohibitInput(false)
+        mDataBinding.messageInput.prohibitInput(false)
         dismissProgressDialog()
     }
 
