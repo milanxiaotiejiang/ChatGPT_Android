@@ -38,10 +38,4 @@
         <item name="rightBackground">@drawable/bar_drawable_placeholder</item>
     </style>
 
-    <style name="dialog_activity_style" parent="@style/AppBaseTheme">
-        <item name="android:windowBackground">@color/colorTransparent</item><!--背景透明-->
-        <item name="android:windowFrame">@color/colorTransparent</item>
-        <item name="android:backgroundDimEnabled">true</item><!--activity变暗-->
-        <item name="android:backgroundDimAmount">0.5</item><!--透明度 0.0f到1.0f。1.0完全不透明，0.0f完全透明-->
-    </style>
 </resources>
