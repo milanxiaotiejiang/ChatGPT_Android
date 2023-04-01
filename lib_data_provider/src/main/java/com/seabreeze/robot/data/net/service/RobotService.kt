@@ -1,6 +1,8 @@
 package com.seabreeze.robot.data.net.service
 
-import com.seabreeze.robot.data.net.bean.request.RequestData
+import com.seabreeze.robot.data.net.bean.request.RequestChat
+import com.seabreeze.robot.data.net.bean.request.RequestImage
+import com.seabreeze.robot.data.net.bean.response.ResponseImage
 import okhttp3.ResponseBody
 import retrofit2.http.*
 
@@ -13,5 +15,9 @@ import retrofit2.http.*
 interface RobotService {
     @Streaming
     @POST("v1/chat/completions")
-    suspend fun completions(@Body requestData: RequestData): ResponseBody
+    suspend fun completions(@Body requestChat: RequestChat): ResponseBody
+
+    @POST("v1/images/generations")
+    suspend fun generations(@Body requestImage: RequestImage): ResponseImage
+
 }

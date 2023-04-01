@@ -15,7 +15,6 @@ import com.seabreeze.robot.base.R
 import com.seabreeze.robot.base.common.AppManager
 import com.seabreeze.robot.base.ext.find
 import com.seabreeze.robot.base.ext.tool.getStatusBarHeight
-import com.seabreeze.robot.base.ext.tool.setScreenLandscape
 import com.seabreeze.robot.base.ext.tool.setScreenPortrait
 
 /**
@@ -23,7 +22,7 @@ import com.seabreeze.robot.base.ext.tool.setScreenPortrait
  * Time: 2020/4/8 10:01
  * Des: 滑动返回、横竖屏、UI
  */
-abstract class SwipeBackActivity : AppCompatActivity()  {
+abstract class SwipeBackActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && isTranslucentOrFloating()) {
@@ -34,14 +33,8 @@ abstract class SwipeBackActivity : AppCompatActivity()  {
         //根类记录 Activity
         AppManager.addActivity(this)
         //横竖屏
-        if (defaultScreen()) {
-            setScreenPortrait()
-        } else {
-            setScreenLandscape()
-        }
+        setScreenPortrait()
     }
-
-    open fun defaultScreen() = true
 
     override fun setRequestedOrientation(requestedOrientation: Int) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && isTranslucentOrFloating()) {

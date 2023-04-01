@@ -2,7 +2,8 @@ package com.seabreeze.robot.data.net.api.impl
 
 import com.seabreeze.robot.data.net.BaseImpl
 import com.seabreeze.robot.data.net.api.RobotAPI
-import com.seabreeze.robot.data.net.bean.request.RequestData
+import com.seabreeze.robot.data.net.bean.request.RequestChat
+import com.seabreeze.robot.data.net.bean.request.RequestImage
 import com.seabreeze.robot.data.net.service.RobotService
 
 
@@ -12,5 +13,9 @@ import com.seabreeze.robot.data.net.service.RobotService
  * Des:
  */
 class RobotImpl : BaseImpl<RobotService>(), RobotAPI {
-    override suspend fun completions(requestData: RequestData) = mService.completions(requestData)
+    override suspend fun completions(requestChat: RequestChat) =
+        mService.completions(requestChat)
+
+    override suspend fun generations(requestImage: RequestImage) =
+        mService.generations(requestImage)
 }

@@ -1,7 +1,7 @@
 package com.seabreeze.robot.data.net.bean.request
 
 
-data class RequestData(
+data class RequestChat(
     val model: String = "gpt-3.5-turbo",
     val messages: List<Message>,
     /*
@@ -45,3 +45,11 @@ data class RequestData(
         val content: String
     )
 }
+
+data class RequestImage(
+    val prompt: String,
+    val n: Int = 1,
+    val size: String,
+    val response_format: String = "url",
+    val user: String = "user"
+)

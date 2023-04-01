@@ -46,6 +46,7 @@ class ChatMessagesActivity :
             deleteMessage.observe(this@ChatMessagesActivity) { message ->
                 mDataBinding.messageInput.inputEditText.setText(message.text)
                 mDataBinding.messageInput.inputEditText.setSelection(mDataBinding.messageInput.inputEditText.text.length)
+                mDataBinding. messageInput. button.isEnabled = message.text.isNotEmpty()
                 messagesAdapter.deleteById(message.id)
             }
 
@@ -63,6 +64,11 @@ class ChatMessagesActivity :
             errorMessage.observe(this@ChatMessagesActivity) { throwable ->
                 unChatLimit()
                 throwable.onError(this@ChatMessagesActivity)
+            }
+
+            imageLiveData.observe(this@ChatMessagesActivity) { message ->
+                unChatLimit()
+                messagesAdapter.addToStart(message, true)
             }
         }
     }

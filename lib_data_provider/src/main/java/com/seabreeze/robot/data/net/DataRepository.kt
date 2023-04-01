@@ -5,9 +5,10 @@ import com.google.gson.JsonSyntaxException
 import com.seabreeze.robot.base.ext.foundation.BaseThrowable
 import com.seabreeze.robot.base.ext.tool.gToBean
 import com.seabreeze.robot.data.net.api.impl.RobotImpl
-import com.seabreeze.robot.data.net.bean.request.RequestData
-import com.seabreeze.robot.data.net.bean.response.ConciseData
-import com.seabreeze.robot.data.net.bean.response.ResponseData
+import com.seabreeze.robot.data.net.bean.request.RequestChat
+import com.seabreeze.robot.data.net.bean.request.RequestImage
+import com.seabreeze.robot.data.net.bean.response.ChatMajor
+import com.seabreeze.robot.data.net.bean.response.ResponseChat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -36,11 +37,9 @@ class DataRepository private constructor() {
         }
     }
 
-    suspend fun getCompletion(
-        requestData: RequestData
-    ): Flow<ConciseData> = flow {
+    suspend fun getCompletion(requestChat: RequestChat): Flow<ChatMajor> = flow {
 
-        val responseBody = sRobotImplement.completions(requestData)
+        val responseBody = sRobotImplement.completions(requestChat)
 
         val source = responseBody.source()
         source.request(Long.MAX_VALUE)
@@ -57,14 +56,14 @@ class DataRepository private constructor() {
                     if (!line.isNullOrBlank() && line.startsWith("data: ")) {
                         val jsonData = line.substringAfter("data: ")
                         if (jsonData != "[DONE]") {
-                            var responseData: ResponseData? = null
+                            var responseChat: ResponseChat? = null
                             try {
-                                responseData = jsonData.gToBean<ResponseData>()
+                                responseChat = jsonData.gToBean<ResponseChat>()
                             } catch (ex: JsonSyntaxException) {
                                 XLog.e("Error parsing json, json is  $jsonData")
                             }
 
-                            responseData?.run {
+                            responseChat?.run {
                                 currentId = id
 
                                 choices.firstOrNull()?.apply {
@@ -83,7 +82,7 @@ class DataRepository private constructor() {
                                         }
 
                                         emit(
-                                            ConciseData(
+                                            ChatMajor(
                                                 currentId,
                                                 index,
                                                 currentRole,
@@ -102,7 +101,7 @@ class DataRepository private constructor() {
                     throw BaseThrowable.ExternalThrowable(IOException("Not all acquisition completed"))
                 } else {
                     emit(
-                        ConciseData(
+                        ChatMajor(
                             currentId,
                             index,
                             currentRole,
@@ -121,6 +120,19 @@ class DataRepository private constructor() {
         } finally {
             responseBody.close()
         }
+    }.flowOn(Dispatchers.IO)
+
+    suspend fun generateImage(prompt: String): Flow<String> = flow {
+        val responseImage = sRobotImplement.generations(
+            RequestImage(
+                prompt = prompt,
+//                size = "${screenWidth}x$screenHeight"
+                size = "${1024}x${1024}"
+            )
+        )
+
+        emit(responseImage.data[0].url)
+
     }.flowOn(Dispatchers.IO)
 
 }

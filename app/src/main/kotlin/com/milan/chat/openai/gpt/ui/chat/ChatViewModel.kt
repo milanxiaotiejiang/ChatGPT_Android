@@ -8,8 +8,8 @@ import com.seabreeze.robot.base.ext.foundation.BaseThrowable
 import com.seabreeze.robot.base.ext.tool.gToBean
 import com.seabreeze.robot.base.framework.mvvm.BaseViewModel
 import com.seabreeze.robot.data.net.DataRepository
-import com.seabreeze.robot.data.net.bean.request.RequestData
-import com.seabreeze.robot.data.net.bean.response.ConciseData
+import com.seabreeze.robot.data.net.bean.request.RequestChat
+import com.seabreeze.robot.data.net.bean.response.ChatMajor
 import com.seabreeze.robot.data.net.bean.response.OpenAiError
 import com.stfalcon.chatkit.sample.common.data.model.Message
 import com.stfalcon.chatkit.sample.common.data.model.User
@@ -63,30 +63,76 @@ class ChatViewModel : BaseViewModel() {
     val errorMessage: LiveData<BaseThrowable>
         get() = _errorMessage
 
+    private val _imageLiveData = MutableLiveData<Message>()
+    val imageLiveData: LiveData<Message>
+        get() = _imageLiveData
+
     fun sendMessage(sendContent: String) {
+
         val selfMessage = selfMessage(sendContent)
-        val requestMessage = selfMessage.requestMessage()
+
+        if (selfMessage.text.startsWith("image ")) {
+            imagesGenerations(selfMessage)
+        } else {
+            chatCompletions(selfMessage)
+        }
+    }
+
+    private fun imagesGenerations(contentMessage: Message) {
+        val imagePrompt = contentMessage.text.substringAfter("image ")
+        viewModelScope.launch {
+            try {
+                DataRepository.INSTANCE.generateImage(imagePrompt).onStart {
+                    onStart(contentMessage)
+                }.catch { e ->
+                    onCatch(contentMessage, BaseThrowable.ExternalThrowable(e))
+                }.collect { url ->
+                    _imageLiveData.postValue(url.urlToMessage())
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                when (e) {
+                    is HttpException -> {
+                        val errorBody = e.response()?.errorBody()?.string()
+                        val errorContent = errorBody?.gToBean<OpenAiError>()?.error?.message
+                            ?: "Unknown error"
+                        onCatch(
+                            contentMessage,
+                            BaseThrowable.InsideThrowable(e.code(), errorContent)
+                        )
+                    }
+                    else -> {
+                        onCatch(contentMessage, BaseThrowable.ExternalThrowable(e))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun chatCompletions(contentMessage: Message) {
+        val requestMessage = contentMessage.requestMessage()
 
         viewModelScope.launch {
 
             try {
-                val messageMutableList = mutableListOf<RequestData.Message>()
+                val messageMutableList = mutableListOf<RequestChat.Message>()
                 getMessageQueue().forEach {
-                    val queueMessage = RequestData.Message(role = it.user.name, content = it.text)
+                    val queueMessage = RequestChat.Message(role = it.user.name, content = it.text)
                     messageMutableList.add(queueMessage)
                 }
                 messageMutableList.add(requestMessage)
-                val requestData = RequestData(messages = messageMutableList)
+                val requestChat = RequestChat(messages = messageMutableList)
 
-                DataRepository.INSTANCE.getCompletion(requestData).onStart {
-                    onStart(selfMessage)
+                DataRepository.INSTANCE.getCompletion(requestChat).onStart {
+                    onStart(contentMessage)
                 }.catch { e ->
-                    onCatch(selfMessage, BaseThrowable.ExternalThrowable(e))
+                    onCatch(contentMessage, BaseThrowable.ExternalThrowable(e))
                 }.collect { conciseData ->
                     if (conciseData.done) {
                         _resultLiveData.postValue(conciseData.conciseToMessage())
 
-                        addMessageToQueue(selfMessage)
+                        addMessageToQueue(contentMessage)
                         addMessageToQueue(conciseData.conciseToMessage())
                     } else {
                         if (conciseData.index == 0) {
@@ -103,10 +149,13 @@ class ChatViewModel : BaseViewModel() {
                         val errorBody = e.response()?.errorBody()?.string()
                         val errorContent = errorBody?.gToBean<OpenAiError>()?.error?.message
                             ?: "Unknown error"
-                        onCatch(selfMessage, BaseThrowable.InsideThrowable(e.code(), errorContent))
+                        onCatch(
+                            contentMessage,
+                            BaseThrowable.InsideThrowable(e.code(), errorContent)
+                        )
                     }
                     else -> {
-                        onCatch(selfMessage, BaseThrowable.ExternalThrowable(e))
+                        onCatch(contentMessage, BaseThrowable.ExternalThrowable(e))
                     }
                 }
             }
@@ -122,7 +171,20 @@ class ChatViewModel : BaseViewModel() {
         _inputLiveData.postValue(selfMessage)
     }
 
-    private fun ConciseData.conciseToMessage(): Message {
+    private fun String.urlToMessage(): Message {
+        val user = User(
+            BaseMessagesActivity.ASSISTANT_ID,
+            ASSISTANT_ROLE,
+            "https://img0.baidu.com/it/u=664228060,2961772095&fm=253&fmt=auto&app=120&f=PNG?w=192&h=192",
+            true
+        )
+
+        val message = Message(UUID.randomUUID().leastSignificantBits.toString(), user, null)
+        message.setImage(Message.Image(this))
+        return message
+    }
+
+    private fun ChatMajor.conciseToMessage(): Message {
         val user = User(
             BaseMessagesActivity.ASSISTANT_ID,
             ASSISTANT_ROLE,
@@ -138,8 +200,8 @@ class ChatViewModel : BaseViewModel() {
         return Message(selfId, selfUser, sendContent)
     }
 
-    private fun Message.requestMessage(): RequestData.Message {
-        return RequestData.Message(role = user.name, content = text)
+    private fun Message.requestMessage(): RequestChat.Message {
+        return RequestChat.Message(role = user.name, content = text)
     }
 
     companion object {

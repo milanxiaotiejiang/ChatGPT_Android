@@ -147,4 +147,6 @@ dependencies {
 
     //Picasso
     implementation "com.squareup.picasso:picasso:2.71828"
+
+    implementation "com.github.skydoves:powermenu:2.2.2"
 }

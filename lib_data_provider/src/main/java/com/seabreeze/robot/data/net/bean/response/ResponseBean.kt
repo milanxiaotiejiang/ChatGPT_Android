@@ -1,6 +1,6 @@
 package com.seabreeze.robot.data.net.bean.response
 
-data class ResponseData(
+data class ResponseChat(
     val id: String,
     val `object`: String,
     val created: Int,
@@ -38,10 +38,19 @@ data class Error(
     val code: String, val message: String, val `param`: String, val type: String
 )
 
-data class ConciseData(
+data class ChatMajor(
     val id: String,
     val index: Int,
     val role: String? = null,
     val content: String? = null,
     val done: Boolean = false
 )
+
+data class ResponseImage(
+    val created: Int,
+    val `data`: List<Data>
+) {
+    data class Data(
+        val url: String
+    )
+}
