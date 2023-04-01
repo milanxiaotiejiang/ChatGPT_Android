@@ -64,6 +64,7 @@ public class MessageInput extends RelativeLayout
         }
     };
     private boolean lastFocus;
+    private boolean prohibitInput;
 
     public MessageInput(Context context) {
         super(context);
@@ -116,6 +117,10 @@ public class MessageInput extends RelativeLayout
         return messageSendButton;
     }
 
+    public void prohibitInput(boolean prohibit) {
+        prohibitInput = prohibit;
+    }
+
     @Override
     public void onClick(View view) {
         int id = view.getId();
@@ -138,7 +143,12 @@ public class MessageInput extends RelativeLayout
     @Override
     public void onTextChanged(CharSequence s, int start, int count, int after) {
         input = s;
-        messageSendButton.setEnabled(input.length() > 0);
+        if (prohibitInput) {
+            messageSendButton.setEnabled(false);
+        } else {
+            messageSendButton.setEnabled(input.length() > 0);
+        }
+
         if (s.length() > 0) {
             if (!isTyping) {
                 isTyping = true;

@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import com.milan.chat.openai.gpt.R
 import com.milan.chat.openai.gpt.holders.IncomingVoiceMessageViewHolder
 import com.milan.chat.openai.gpt.holders.OutcomingVoiceMessageViewHolder
-import com.milan.chat.openai.gpt.model.BaseThrowable
+import com.milan.chat.openai.gpt.model.onError
 import com.milan.chat.openai.gpt.ui.BaseMessagesActivity
 import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessageInput
@@ -14,7 +14,6 @@ import com.stfalcon.chatkit.messages.MessagesList
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import com.stfalcon.chatkit.sample.common.data.fixtures.MessagesFixtures
 import com.stfalcon.chatkit.sample.common.data.model.Message
-import com.tapadoo.alerter.Alerter
 
 /**
  * https://github.com/stfalcon-studio/ChatKit
@@ -30,10 +29,14 @@ class ChatMessagesActivity : BaseMessagesActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_messages)
 
-        messageInput = findViewById<MessageInput>(R.id.input)
+        initViews()
+        chatViewModel.initViewModel()
+    }
+
+    private fun initViews() {
+        messageInput = findViewById(R.id.input)
         messageInput.setInputListener { input ->
-            messageInput.button.isEnabled = false
-            showProgressDialog()
+            onChatLimit()
             chatViewModel.sendMessage(input.toString())
             true
         }
@@ -47,53 +50,51 @@ class ChatMessagesActivity : BaseMessagesActivity(),
             R.layout.item_custom_outcoming_voice_message,
             this
         )
+
         messagesAdapter = MessagesListAdapter(USER_ID, holders, imageLoader)
         messagesAdapter.enableSelectionMode(this)
         messagesAdapter.setLoadMoreListener(this)
         messagesList.setAdapter(messagesAdapter)
+    }
 
-        with(chatViewModel) {
-            inputLiveData.observe(this@ChatMessagesActivity) { message ->
-                if (message.user.id == USER_ID) {
-                    messagesAdapter.addToStart(message, true)
-                }
-            }
-            createLiveData.observe(this@ChatMessagesActivity) { message ->
+
+    private fun ChatViewModel.initViewModel() {
+        inputLiveData.observe(this@ChatMessagesActivity) { message ->
+            if (message.user.id == USER_ID) {
                 messagesAdapter.addToStart(message, true)
-                dismissProgressDialog()
-            }
-            streamLiveData.observe(this@ChatMessagesActivity) { message ->
-                messagesAdapter.update(message)
-            }
-            messageLiveData.observe(this@ChatMessagesActivity) { message ->
-                messageInput.button.isEnabled = true
-                dismissProgressDialog()
-                messagesAdapter.update(message)
-            }
-            errorMessage.observe(this@ChatMessagesActivity) { throwable ->
-                messageInput.button.isEnabled = true
-                dismissProgressDialog()
-                when {
-                    throwable.isExternal() -> {
-                        val externalThrowable = this as BaseThrowable.ExternalThrowable
-                        externalThrowable.cause?.apply {
-                            message?.apply {
-                                Alerter.create(this@ChatMessagesActivity)
-                                    .setText(this)
-                                    .show()
-                            }
-                        }
-                    }
-                    throwable.isInside() -> {
-                        val insideThrowable = this as BaseThrowable.InsideThrowable
-                        Alerter.create(this@ChatMessagesActivity)
-                            .setText("${insideThrowable.errorCode} ${insideThrowable.errorMessage}")
-                            .show()
-                    }
-                }
             }
         }
+        deleteMessage.observe(this@ChatMessagesActivity) { message ->
+            messageInput.inputEditText.setText(message.text)
+            messageInput.inputEditText.setSelection(messageInput.inputEditText.text.length)
+            messagesAdapter.deleteById(message.id)
+        }
 
+        createLiveData.observe(this@ChatMessagesActivity) { message ->
+            unChatLimit()
+            messagesAdapter.addToStart(message, true)
+        }
+        streamLiveData.observe(this@ChatMessagesActivity) { message ->
+            messagesAdapter.update(message)
+        }
+        resultLiveData.observe(this@ChatMessagesActivity) { message ->
+            messagesAdapter.update(message)
+        }
+
+        errorMessage.observe(this@ChatMessagesActivity) { throwable ->
+            unChatLimit()
+            throwable.onError(this@ChatMessagesActivity)
+        }
+    }
+
+    private fun onChatLimit() {
+        messageInput.prohibitInput(true)
+        showProgressDialog()
+    }
+
+    private fun unChatLimit() {
+        messageInput.prohibitInput(false)
+        dismissProgressDialog()
     }
 
     override fun hasContentFor(message: Message, type: Byte): Boolean {
