@@ -127,7 +127,8 @@ abstract class SwipeBackActivity : AppCompatActivity() {
             .keyboardEnable(true)
             .titleBarMarginTop(R.id.toolbar)
             .statusBarDarkFont(true)
-            .navigationBarColor(android.R.color.white) //导航栏颜色，不写默认黑色
+            .statusBarColor(R.color.colorPrimary) // 设置状态栏颜色
+            .navigationBarColor(R.color.colorPrimaryDark) // 设置导航栏颜色
             .navigationBarDarkIcon(true) //导航栏图标是深色，不写默认为亮色
             .init()
     }

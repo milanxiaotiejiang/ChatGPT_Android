@@ -1,5 +1,15 @@
 <resources>
 
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
     <style name="BlueTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/cornflower_blue</item>
         <item name="colorPrimaryDark">@color/cornflower_blue_dark</item>
@@ -25,6 +35,15 @@
     <style name="Dialog.FullScreen" parent="Theme.AppCompat.Dialog">
         <item name="android:padding">0dp</item>
         <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="PopupCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">1.5dp</item>
+    </style>
+
+    <style name="PopupCardThemeOverlay">
+        <item name="materialCardViewStyle">@style/PopupCardStyle</item>
     </style>
 
 </resources>

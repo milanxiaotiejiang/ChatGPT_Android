@@ -87,7 +87,7 @@ class ChatViewModel : BaseViewModel() {
                 }.catch { e ->
                     onCatch(contentMessage, BaseThrowable.ExternalThrowable(e))
                 }.collect { url ->
-                    _imageLiveData.postValue(url.urlToMessage())
+                    _imageLiveData.postValue(url.urlToMessage(imagePrompt))
                 }
 
             } catch (e: Exception) {
@@ -171,7 +171,7 @@ class ChatViewModel : BaseViewModel() {
         _inputLiveData.postValue(selfMessage)
     }
 
-    private fun String.urlToMessage(): Message {
+    private fun String.urlToMessage(content: String): Message {
         val user = User(
             BaseMessagesActivity.ASSISTANT_ID,
             ASSISTANT_ROLE,
@@ -179,7 +179,7 @@ class ChatViewModel : BaseViewModel() {
             true
         )
 
-        val message = Message(UUID.randomUUID().leastSignificantBits.toString(), user, null)
+        val message = Message(UUID.randomUUID().leastSignificantBits.toString(), user, content)
         message.setImage(Message.Image(this))
         return message
     }

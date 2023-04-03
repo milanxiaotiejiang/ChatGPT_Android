@@ -1,12 +1,12 @@
 package com.milan.chat.openai.gpt.ui.chat
 
 import android.content.DialogInterface
-import android.os.Bundle
 import android.widget.ImageView
 import com.milan.chat.openai.gpt.R
 import com.milan.chat.openai.gpt.databinding.ActivityChatMessagesBinding
 import com.milan.chat.openai.gpt.holders.IncomingVoiceMessageViewHolder
 import com.milan.chat.openai.gpt.holders.OutcomingVoiceMessageViewHolder
+import com.milan.chat.openai.gpt.holders.ViewerHelper
 import com.milan.chat.openai.gpt.ui.BaseMessagesActivity
 import com.seabreeze.robot.base.ext.foundation.onError
 import com.squareup.picasso.Picasso
@@ -22,10 +22,6 @@ import com.stfalcon.chatkit.sample.common.data.model.Message
 class ChatMessagesActivity :
     BaseMessagesActivity<ChatViewModel, ActivityChatMessagesBinding>(R.layout.activity_chat_messages),
     MessageHolders.ContentChecker<Message>, DialogInterface.OnClickListener {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onInitDataBinding() {
         with(mDataBinding) {
@@ -46,7 +42,7 @@ class ChatMessagesActivity :
             deleteMessage.observe(this@ChatMessagesActivity) { message ->
                 mDataBinding.messageInput.inputEditText.setText(message.text)
                 mDataBinding.messageInput.inputEditText.setSelection(mDataBinding.messageInput.inputEditText.text.length)
-                mDataBinding. messageInput. button.isEnabled = message.text.isNotEmpty()
+                mDataBinding.messageInput.button.isEnabled = message.text.isNotEmpty()
                 messagesAdapter.deleteById(message.id)
             }
 
@@ -74,6 +70,9 @@ class ChatMessagesActivity :
     }
 
     override fun initData() {
+
+        setSupportActionBar(mDataBinding.toolbar)
+
         imageLoader = object : ImageLoader {
             override fun loadImage(imageView: ImageView, url: String?, payload: Any?) {
                 Picasso.get().load(url).into(imageView)
@@ -103,6 +102,22 @@ class ChatMessagesActivity :
         messagesAdapter.enableSelectionMode(this)
         messagesAdapter.setLoadMoreListener(this)
         mDataBinding.messagesList.setAdapter(messagesAdapter)
+
+//        messagesAdapter.addToStart(MessagesFixtures.getTextMessage(), true)
+//        messagesAdapter.addToStart(MessagesFixtures.getTextMessage(), true)
+//        messagesAdapter.addToStart(MessagesFixtures.getTextMessage(), true)
+//        messagesAdapter.addToStart(MessagesFixtures.getTextMessage(), true)
+//        messagesAdapter.addToStart(MessagesFixtures.getTextMessage(), true)
+//        messagesAdapter.addToStart(MessagesFixtures.getImageMessage(), true)
+//        messagesAdapter.addToStart(MessagesFixtures.getVoiceMessage(), true)
+
+        messagesAdapter.setOnMessageClickListener { message ->
+            if (message.imageUrl.isNullOrBlank()) {
+                return@setOnMessageClickListener
+            }
+            ViewerHelper.provideImageViewerBuilder(this, messagesAdapter, message)
+                .show()
+        }
     }
 
     private fun onChatLimit() {

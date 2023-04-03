@@ -118,7 +118,6 @@ class OkHttpManager private constructor() {
         // 配置 client
         return OkHttpClient.Builder()
             .eventListenerFactory(OkHttpEventListener.FACTORY)
-            .dns(OkHttpDNS())
             .addInterceptor(urlInterceptor) // 设置拦截器
 //            .addInterceptor(headInterceptor)
             .addInterceptor(headerInterceptor)

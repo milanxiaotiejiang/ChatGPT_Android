@@ -1,29 +1,46 @@
 package com.milan.chat.openai.gpt.ui
 
 import android.Manifest
-import android.os.*
+import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.LayoutRes
 import androidx.databinding.ViewDataBinding
 import com.elvishew.xlog.XLog
 import com.milan.chat.openai.gpt.R
-import com.milan.chat.openai.gpt.ui.fragment.ProgressDialogFragment
+import com.milan.chat.openai.gpt.widget.pop.OperateAttachPopupView
 import com.seabreeze.robot.base.framework.mvvm.BaseViewModel
 import com.seabreeze.robot.base.ui.activity.BaseVmActivity
 import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import com.stfalcon.chatkit.sample.common.data.model.Message
-import com.stfalcon.chatkit.sample.utils.AppUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
 abstract class BaseMessagesActivity<out ViewModel : BaseViewModel, DataBinding : ViewDataBinding>(
-    @LayoutRes
-    private val layoutId: Int
+    @LayoutRes private val layoutId: Int
 ) : BaseVmActivity<ViewModel, DataBinding>(layoutId), MessagesListAdapter.SelectionListener,
     MessagesListAdapter.OnLoadMoreListener {
+
+    private var firstTime: Long = 0
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (selectionCount == 0) {
+                val secondTime = System.currentTimeMillis()
+                if (secondTime - firstTime < 2000) {
+                    finish()
+                } else {
+                    showToast("再点一次退出程序")
+                    firstTime = System.currentTimeMillis()
+                }
+            } else {
+                messagesAdapter.unselectAllItems()
+            }
+        }
+    }
 
     open lateinit var messagesAdapter: MessagesListAdapter<Message>
 
@@ -32,7 +49,7 @@ abstract class BaseMessagesActivity<out ViewModel : BaseViewModel, DataBinding :
     private lateinit var menu: Menu
     private var selectionCount = 0
 
-    private lateinit var progressDialogFragment: ProgressDialogFragment
+    private lateinit var operateAttachPopupView: OperateAttachPopupView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +61,13 @@ abstract class BaseMessagesActivity<out ViewModel : BaseViewModel, DataBinding :
                 XLog.d("These permissions are denied: $deniedList")
             }
         }
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
+        operateAttachPopupView = OperateAttachPopupView(this).setOperateListener {
+            XLog.e("setOperateListener $it")
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -53,24 +77,37 @@ abstract class BaseMessagesActivity<out ViewModel : BaseViewModel, DataBinding :
         return true
     }
 
+    private val messageStringFormatter: MessagesListAdapter.Formatter<Message>
+        get() = MessagesListAdapter.Formatter { message: Message ->
+            val imageUrl = message.imageUrl
+            if (imageUrl != null) {
+                return@Formatter imageUrl
+            }
+
+            var text = message.text
+            if (text != null) {
+                return@Formatter text
+            }
+
+            val createdAt = SimpleDateFormat(
+                "MMM d, EEE 'at' h:mm a",
+                Locale.getDefault()
+            ).format(message.createdAt)
+            text = "[attachment]"
+            String.format(
+                Locale.getDefault(), "%s: %s (%s)", message.user.name, text, createdAt
+            )
+        }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_delete -> messagesAdapter.deleteSelectedMessages()
             R.id.action_copy -> {
                 messagesAdapter.copySelectedMessagesText(this, messageStringFormatter, true)
-                AppUtils.showToast(this, R.string.copied_message, true)
+                showToast("Message copied!")
             }
         }
         return true
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (selectionCount == 0) {
-            super.onBackPressed()
-        } else {
-            messagesAdapter.unselectAllItems()
-        }
     }
 
     override fun onLoadMore(page: Int, totalItemsCount: Int) {
@@ -87,19 +124,6 @@ abstract class BaseMessagesActivity<out ViewModel : BaseViewModel, DataBinding :
     }
 
     private fun loadMessages() {}
-
-    private val messageStringFormatter: MessagesListAdapter.Formatter<Message>
-        get() = MessagesListAdapter.Formatter { message: Message ->
-            val createdAt = SimpleDateFormat("MMM d, EEE 'at' h:mm a", Locale.getDefault())
-                .format(message.createdAt)
-            var text = message.text
-            if (text == null) text = "[attachment]"
-            String.format(
-                Locale.getDefault(), "%s: %s (%s)",
-                message.user.name, text, createdAt
-            )
-        }
-
 
 
     companion object {

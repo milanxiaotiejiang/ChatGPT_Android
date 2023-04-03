@@ -103,7 +103,7 @@ channel {
     //多渠道包的输出目录，默认为new File(project.buildDir,"channel")
     outputDir = new File(project.buildDir, "channels")
     //多渠道包的命名规则，默认为：${appName}-${versionName}-${versionCode}-${flavorName}-${buildType}-${buildTime}
-    apkNameFormat = 'aurora-${appName}-${versionName}-${versionCode}-${flavorName}-${buildType}'
+    apkNameFormat = 'ChatGPT-${appName}-${versionName}-${versionCode}-${flavorName}-${buildType}'
     //快速模式：生成渠道包时不进行校验（速度可以提升10倍以上，默认为false）
     fastMode = false
     //buildTime的时间格式，默认格式：yyyyMMdd-HHmmss
@@ -137,7 +137,6 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.8.0'
 
     kapt 'com.github.bumptech.glide:compiler:4.15.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
@@ -148,5 +147,8 @@ dependencies {
     //Picasso
     implementation "com.squareup.picasso:picasso:2.71828"
 
-    implementation "com.github.skydoves:powermenu:2.2.2"
+//    implementation 'com.github.chrisbanes:PhotoView:2.2.0'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+//    implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
+    implementation 'com.github.iielse:imageviewer:2.1.22'
 }
