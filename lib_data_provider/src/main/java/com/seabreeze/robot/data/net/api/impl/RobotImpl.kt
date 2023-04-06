@@ -13,6 +13,9 @@ import com.seabreeze.robot.data.net.service.RobotService
  * Des:
  */
 class RobotImpl : BaseImpl<RobotService>(), RobotAPI {
+    override suspend fun models() =
+        mService.models()
+
     override suspend fun completions(requestChat: RequestChat) =
         mService.completions(requestChat)
 

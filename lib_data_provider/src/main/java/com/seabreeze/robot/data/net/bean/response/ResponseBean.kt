@@ -1,5 +1,36 @@
 package com.seabreeze.robot.data.net.bean.response
 
+data class ResponseModel(
+    val `data`: List<Data>,
+    val `object`: String,
+    val error: Error
+)
+
+data class Data(
+    val created: Int,
+    val id: String,
+    val `object`: String,
+    val owned_by: String,
+    val parent: Any,
+    val permission: List<Permission>,
+    val root: String
+)
+
+data class Permission(
+    val allow_create_engine: Boolean,
+    val allow_fine_tuning: Boolean,
+    val allow_logprobs: Boolean,
+    val allow_sampling: Boolean,
+    val allow_search_indices: Boolean,
+    val allow_view: Boolean,
+    val created: Int,
+    val group: Any,
+    val id: String,
+    val is_blocking: Boolean,
+    val `object`: String,
+    val organization: String
+)
+
 data class ResponseChat(
     val id: String,
     val `object`: String,

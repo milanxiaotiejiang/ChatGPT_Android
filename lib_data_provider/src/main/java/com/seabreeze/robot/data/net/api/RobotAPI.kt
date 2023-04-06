@@ -3,6 +3,7 @@ package com.seabreeze.robot.data.net.api
 import com.seabreeze.robot.data.net.bean.request.RequestChat
 import com.seabreeze.robot.data.net.bean.request.RequestImage
 import com.seabreeze.robot.data.net.bean.response.ResponseImage
+import com.seabreeze.robot.data.net.bean.response.ResponseModel
 import okhttp3.ResponseBody
 
 /**
@@ -11,6 +12,7 @@ import okhttp3.ResponseBody
  * Des:
  */
 interface RobotAPI {
+    suspend fun models(): ResponseModel
     suspend fun completions(requestChat: RequestChat): ResponseBody
     suspend fun generations(requestImage: RequestImage): ResponseImage
 }

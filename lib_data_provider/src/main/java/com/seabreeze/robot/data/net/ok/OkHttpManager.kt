@@ -8,6 +8,7 @@ import com.seabreeze.robot.data.BuildConfig
 import com.seabreeze.robot.data.common.Common.Companion.H_NAME
 import com.seabreeze.robot.data.common.Common.Companion.ROBOT_MALL
 import com.seabreeze.robot.data.net.RetrofitFactory.Companion.API_ROBOT_MALL
+import com.seabreeze.robot.data.settings.DataSettings
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.logging.HttpLoggingInterceptor
@@ -91,7 +92,7 @@ class OkHttpManager private constructor() {
         val headerInterceptor = Interceptor { chain ->
             val request = chain.request().newBuilder()
                 .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer ${BuildConfig.OPEN_AI_CHAT_GPT_API_KEY}")
+                .header("Authorization", "Bearer ${DataSettings.open_ai_api}")
                 .build()
             chain.proceed(request)
         }

@@ -9,6 +9,7 @@ import com.milan.chat.openai.gpt.holders.OutcomingVoiceMessageViewHolder
 import com.milan.chat.openai.gpt.holders.ViewerHelper
 import com.milan.chat.openai.gpt.ui.BaseMessagesActivity
 import com.seabreeze.robot.base.ext.foundation.onError
+import com.seabreeze.robot.data.settings.DataSettings
 import com.squareup.picasso.Picasso
 import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
@@ -84,6 +85,10 @@ class ChatMessagesActivity :
         }
 
         mDataBinding.messageInput.setInputListener { input ->
+            if (DataSettings.open_ai_api.isBlank()) {
+                showToast("Please enter the openai API key !")
+                return@setInputListener true
+            }
             onChatLimit()
             mViewModel.sendMessage(input.toString())
             true
@@ -115,8 +120,7 @@ class ChatMessagesActivity :
             if (message.imageUrl.isNullOrBlank()) {
                 return@setOnMessageClickListener
             }
-            ViewerHelper.provideImageViewerBuilder(this, messagesAdapter, message)
-                .show()
+            ViewerHelper.provideImageViewerBuilder(this, messagesAdapter, message).show()
         }
     }
 

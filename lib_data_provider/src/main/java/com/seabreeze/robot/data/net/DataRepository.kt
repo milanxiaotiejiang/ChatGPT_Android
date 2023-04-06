@@ -9,6 +9,7 @@ import com.seabreeze.robot.data.net.bean.request.RequestChat
 import com.seabreeze.robot.data.net.bean.request.RequestImage
 import com.seabreeze.robot.data.net.bean.response.ChatMajor
 import com.seabreeze.robot.data.net.bean.response.ResponseChat
+import com.seabreeze.robot.data.net.bean.response.ResponseModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,8 @@ class DataRepository private constructor() {
             DataRepository()
         }
     }
+
+    suspend fun models(): ResponseModel = sRobotImplement.models()
 
     suspend fun getCompletion(requestChat: RequestChat): Flow<ChatMajor> = flow {
 

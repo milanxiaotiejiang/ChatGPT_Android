@@ -20,11 +20,6 @@ android {
         multiDexEnabled true
         flavorDimensions "1"
 
-        buildConfigField(
-                "String",
-                "OPEN_AI_CHAT_GPT_API_KEY",
-                "\"" + localProperties.getProperty("OPEN_AI_CHAT_GPT_API_KEY", "") + "\""
-        )
         ndk {
             abiFilters "armeabi-v7a"
         }

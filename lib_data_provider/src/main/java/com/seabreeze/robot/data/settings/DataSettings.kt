@@ -11,6 +11,7 @@ import com.seabreeze.robot.base.ext.foundation.Mmkv
  */
 object DataSettings {
 
+    var open_ai_api: String by Mmkv("open_ai_api", "")
     var token_app: String by Mmkv("TOKEN_APP", "")
 
 }
